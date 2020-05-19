@@ -45,3 +45,5 @@ services:
     restart: unless-stopped
     depends_on:
       - rtorrent-flood
+
+# Flood connection: TCP, rutorrent-flood (or container name), port 5004.
