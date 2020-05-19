@@ -3,7 +3,6 @@ FROM alpine:3.11
 ARG RTORRENT_VER=0.9.8
 ARG LIBTORRENT_VER=0.13.8
 ARG MEDIAINFO_VER=19.09
-ARG FLOOD_VER=master
 ARG BUILD_CORES
 
 ENV UID=991 GID=991 \
@@ -66,7 +65,7 @@ RUN NB_CORES=${BUILD_CORES-`getconf _NPROCESSORS_CONF`} \
  && strip -s /usr/local/bin/rtorrent \
  && strip -s /usr/local/bin/mediainfo \
  && ln -sf /usr/local/bin/mediainfo /usr/bin/mediainfo \
- && mkdir /usr/flood && cd /usr/flood && wget -qO- https://github.com/Flood-UI/flood/archive/${FLOOD_VER}.tar.gz | tar xz --strip 1 \
+ && mkdir /usr/flood && cd /usr/flood && wget -qO- https://github.com/artik/flood/archive/v1.1.tar.gz | tar xz --strip 1 \
  && npm install && npm cache clean --force \
  && apk del build-dependencies \
  && rm -rf /var/cache/apk/* /tmp/*
