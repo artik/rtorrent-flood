@@ -1,14 +1,18 @@
-FROM alpine:3.11
+# original docker image: https://hub.docker.com/r/muertocaloh/rtorrent-flood/dockerfile
+
+FROM alpine:3.12
 
 ARG RTORRENT_VER=0.9.8
 ARG LIBTORRENT_VER=0.13.8
-ARG MEDIAINFO_VER=19.09
+ARG MEDIAINFO_VER=20.08
+ARG FLOOD_VER=3.1.0
 ARG BUILD_CORES
 
-ENV UID=991 GID=991 \
+ENV UID=1024 GID=100 \
     FLOOD_SECRET=supersecret \
     WEBROOT=/ \
-    RTORRENT_SCGI=0 \
+    DISABLE_AUTH=true \
+    RTORRENT_SOCK=true \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
 RUN NB_CORES=${BUILD_CORES-`getconf _NPROCESSORS_CONF`} \
@@ -39,7 +43,7 @@ RUN NB_CORES=${BUILD_CORES-`getconf _NPROCESSORS_CONF`} \
     zlib \
     s6 \
     su-exec \
-    python \
+    python2 \
     nodejs \
     nodejs-npm \
     unrar \
@@ -65,7 +69,7 @@ RUN NB_CORES=${BUILD_CORES-`getconf _NPROCESSORS_CONF`} \
  && strip -s /usr/local/bin/rtorrent \
  && strip -s /usr/local/bin/mediainfo \
  && ln -sf /usr/local/bin/mediainfo /usr/bin/mediainfo \
- && mkdir /usr/flood && cd /usr/flood && wget -qO- https://github.com/artik/flood/archive/v1.1.tar.gz | tar xz --strip 1 \
+ && mkdir /usr/flood && cd /usr/flood && wget -qO- https://github.com/jesec/flood/archive/v${FLOOD_VER}.tar.gz | tar xz --strip 1 \
  && npm install && npm cache clean --force \
  && apk del build-dependencies \
  && rm -rf /var/cache/apk/* /tmp/*
@@ -82,6 +86,6 @@ EXPOSE 3000 49184 49184/udp
 LABEL description="BitTorrent client with WebUI front-end" \
       rtorrent="rTorrent BiTorrent client v$RTORRENT_VER" \
       libtorrent="libtorrent v$LIBTORRENT_VER" \
-      maintainer="flosoft <florian@florianjensen.com>"
+      maintainer="muertocaloh <muertocaloh@protonmail.com>"
 
 CMD ["run.sh"]

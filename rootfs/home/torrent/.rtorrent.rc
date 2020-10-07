@@ -1,28 +1,36 @@
-scgi_local = /tmp/rtorrent.sock
+scgi_port = 0.0.0.0:5004
 
 encoding_list = UTF-8
 port_range = 49184-49184
 port_random = no
-check_hash = no
-directory = /data/torrents
-session = /data/.session
-encryption = require,require_RC4,allow_incoming,try_outgoing
 trackers.use_udp.set = yes
-dht.mode.set = off
-protocol.pex.set = no
 
-min_peers = 1
-max_peers = 100
-min_peers_seed = 1
-max_peers_seed = 50
+directory = /finished/
+session = /data/.session
+
+dht = auto
+dht_port = 6881
+dht.mode.set = auto
+protocol.pex.set = yes
+
+network.xmlrpc.size_limit.set = 2000000
+
+min_peers = 40
+max_peers = 1200
 max_uploads = 15
+download_rate = 0
+upload_rate = 0
+check_hash = no
 
-network.xmlrpc.size_limit.set = 10000000
-
-schedule = watch_directory,1,1,"load.start=/data/.watch/*.torrent"
-schedule = untied_directory,5,5,"stop_untied=/data/.watch/*.torrent"
-schedule = scgi_permission,0,0,"execute.nothrow=chmod,\"g+w,o=\",/tmp/rtorrent.sock"
-schedule = insufficient_disk_space,1,30,close_low_diskspace=500M
+schedule = low_diskspace,5,60,close_low_diskspace=100M
+# schedule = scgi_permission,0,0,"execute.nothrow=chmod,\"g+w,o=\",/tmp/rtorrent.sock"
 
 method.set_key=event.download.finished,unrar,"execute={/usr/local/bin/rtunrar.sh,$d.base_path=}"
 method.set_key=event.download.inserted_new,loaded_time,"d.custom.set=addtime,$cat=$system.time=;d.save_full_session="
+
+# Move command
+method.insert = d.get_finished_dir, simple, "/finished/"
+# method.insert = d.get_finished_dir, simple, "cat=/finished/,$d.custom1="
+# method.insert = d.get_data_full_path, simple, "branch=((d.is_multi_file)),((cat,(d.directory))),((cat,(d.directory),/,(d.name)))"
+# method.insert = d.move_to_complete, simple, "execute=mkdir,-p,$argument.1=; execute=cp,-rp,$argument.0=,$argument.1=; d.stop=; d.directory.set=$argument.1=; d.start=;d.save_full_session=; execute=rm, -r, $argument.0="
+# method.set_key = event.download.finished,move_complete,"d.move_to_complete=$d.get_data_full_path=,$d.get_finished_dir="
