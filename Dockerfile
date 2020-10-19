@@ -1,18 +1,16 @@
-# original docker image: https://hub.docker.com/r/muertocaloh/rtorrent-flood/dockerfile
+FROM alpine:3.11
 
 FROM alpine:3.12
 
 ARG RTORRENT_VER=0.9.8
 ARG LIBTORRENT_VER=0.13.8
-ARG MEDIAINFO_VER=20.08
-ARG FLOOD_VER=3.1.0
+ARG MEDIAINFO_VER=19.09
 ARG BUILD_CORES
 
 ENV UID=1024 GID=100 \
     FLOOD_SECRET=supersecret \
     WEBROOT=/ \
-    DISABLE_AUTH=true \
-    RTORRENT_SOCK=true \
+    RTORRENT_SCGI=0 \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
 RUN NB_CORES=${BUILD_CORES-`getconf _NPROCESSORS_CONF`} \
