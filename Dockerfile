@@ -1,16 +1,16 @@
-FROM alpine:3.11
-
 FROM alpine:3.12
 
 ARG RTORRENT_VER=0.9.8
 ARG LIBTORRENT_VER=0.13.8
-ARG MEDIAINFO_VER=19.09
+ARG MEDIAINFO_VER=20.09
+ARG FLOOD_VER=3.1.0
 ARG BUILD_CORES
 
-ENV UID=1024 GID=100 \
+ENV UID=991 GID=991 \
     FLOOD_SECRET=supersecret \
     WEBROOT=/ \
-    RTORRENT_SCGI=0 \
+    DISABLE_AUTH=false \
+    RTORRENT_SOCK=true \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
 RUN NB_CORES=${BUILD_CORES-`getconf _NPROCESSORS_CONF`} \
@@ -84,6 +84,6 @@ EXPOSE 3000 49184 49184/udp
 LABEL description="BitTorrent client with WebUI front-end" \
       rtorrent="rTorrent BiTorrent client v$RTORRENT_VER" \
       libtorrent="libtorrent v$LIBTORRENT_VER" \
-      maintainer="muertocaloh <muertocaloh@protonmail.com>"
+      maintainer="flosoft <florian@florianjensen.com>"
 
 CMD ["run.sh"]
